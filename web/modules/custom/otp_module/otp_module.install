@@ -1,0 +1,32 @@
+<?php 
+/**
+ * Implements hook_schema().
+ */
+function otp_module_schema() {
+  $schema['otp_module_verification'] = [
+    'description' => 'Custom table for storing test form data.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary key: Unique ID for verification records.',
+      ],
+      'email' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'User email address.',
+      ],
+      'otp' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Generated otp.',
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+
+  return $schema;
+}

@@ -1,0 +1,23 @@
+otp_module.api:
+  path: '/api'
+  # methods: [GET]
+  defaults: 
+    _controller: '\Drupal\otp_module\Controller\OtpController::getNodeData' 
+  requirements:
+    _access: 'TRUE'
+
+otp_module.nodes:
+  path: '/nodes'
+  methods: [GET]
+  defaults: 
+    _controller: '\Drupal\otp_module\Controller\OtpController::getAllNodes' 
+  requirements:
+    _access: 'TRUE'
+
+otp_module.specific:
+  path: '/specific'
+  methods: [GET]
+  defaults: 
+    _controller: '\Drupal\otp_module\Controller\OtpController::getSpecificNode' 
+  requirements:
+    _access: 'TRUE'

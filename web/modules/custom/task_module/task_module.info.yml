@@ -1,0 +1,6 @@
+name: 'TASK Module'
+type: module
+core_version_requirement: ^9 || ^10
+description: 'Custom module to add otp email verififcation feature .'
+package: 'custom'
+configure: task_module.settings_form

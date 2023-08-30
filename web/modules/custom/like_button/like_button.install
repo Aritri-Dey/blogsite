@@ -1,0 +1,33 @@
+<?php 
+
+/**
+ * Implements hook_schema().
+ */
+function like_button_schema() {
+  $schema['like_table'] = [
+    'description' => 'Custom table for storing test form data.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary key: Unique ID for the entry.',
+      ],
+      'node' => [
+        'type' => 'int',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Node',
+      ],
+      'like_count' => [
+        'type' => 'int',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Like count',
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+
+  return $schema;
+}

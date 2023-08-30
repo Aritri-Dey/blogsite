@@ -1,0 +1,275 @@
+<?php 
+// use Drupal\Component\Utility\Random;
+// use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+// function otp_module_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+//   \Drupal::messenger()->addMessage(t("Form id of this form is @id:",['@id' => $form_id]));
+//   // user_register_form
+
+// }
+
+/**
+ * Implements hook_form_FORM_ID_alter() to add OTP field to user login form.
+ */
+// function otp_module_form_user_login_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+//   $form['send_otp_btn'] = [
+//     '#type' => 'submit',
+//     '#value' => t('Send OTP'),
+//     '#required' => TRUE,
+//     '#submit' => ['sendMailOTP'],
+//   ];
+  
+//   $form['otp'] = [
+//     '#type' => 'textfield',
+//     '#title' => t('Enter otp sent to your registerd email id.'),
+//     // '#required' => TRUE,
+//   ];
+//   // if ($form_id == 'user_login_form') {
+//     // Add a custom submit handler to the form.
+//     $form['#validate'][] = 'verifyOTP';
+
+//     // Add a custom validation handler specifically for the login button.
+//     // $form['actions']['submit']['#limit_validation_errors'] = [['submit']];
+//     // $form['actions']['submit']['#validate'][] = 'verifyOTP';
+  
+//     // parent::submitForm($form, $form_state);
+//   // }
+   
+// }
+
+/**
+ * Implements hook_mail().
+ */
+// function otp_module_mail($key, &$message, $params) {
+//   // $options = array(
+//   //   'langcode' => $message['langcode'],
+//   // );
+ 
+//   switch ($key) {
+//     case 'otp_verification':
+//       $message['from'] = \Drupal::config('system.site')->get('mail');
+//       $message['subject'] = "OTP";
+//       $message['body'][] = $params['message'];
+//       break;
+//   }
+//  }
+
+/**
+ * Function to send OTP email.
+ */
+// function sendMailOTP($form, &$form_state) {
+//   $name = $form_state->getValue('name');
+//   $database = Drupal::database();
+//   $query = $database->select('users_field_data', 'u');
+//   $query->fields('u', ['name' , 'mail'])
+//         ->condition('u.name', $name, '=');
+//   $datas = $query->execute()->fetchAll(\PDO::FETCH_ASSOC);
+//   foreach ($datas as $data) {
+//     $email = $data['mail'];
+//   }
+
+//   // Generating otp.
+//   $otp = generateOTP();
+//   // Storing otp in the satabase.
+//   storeOTP($email, $otp);
+
+//   $mailManager = \Drupal::service('plugin.manager.mail');
+//   $module = 'otp_module';
+//   $key = 'otp_verification';
+//   $to = $email;
+//   $params = [
+//     'message' => 'Your OTP: ' . $otp,
+//   ];
+//   $langcode = \Drupal::currentUser()->getPreferredLangcode();
+//   $send = true;
+
+//   $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+//   if ($result['result'] !== true) {
+//     \Drupal::messenger()->addMessage(t('There was a problem sending your message and it was not sent.'), 'error');
+//   }
+//   else {
+//     \Drupal::messenger()->addMessage(t('Your message has been sent.'));
+//   }
+// }
+
+/**
+ * Function to verify OTP against the stored OTP for a given email.
+ */
+// function verifyOTP($form, &$form_state) {
+//   $form_otp = $form_state->getValue('otp');
+//   $name = $form_state->getValue('name');
+//   // Comparing stored OTP with the provided OTP.
+//   $database = Drupal::database();
+//   $query = $database->select('users_field_data', 'u');
+//   $query->fields('u', ['name' , 'mail'])
+//         ->condition('u.name', $name, '=');
+//   $datas = $query->execute()->fetchAll(\PDO::FETCH_ASSOC);
+//   foreach ($datas as $data) {
+//     $email = $data['mail'];
+//   }
+
+//   $query = $database->select('otp_module_verification', 'a');
+//   $query->fields('a', [' otp' , 'email'])
+//        ->condition('a.email', $email, '=');
+//   $datas = $query->execute()->fetchAll(\PDO::FETCH_ASSOC);
+//   foreach ($datas as $data) {
+//     $db_otp = $data['otp'];
+//   }
+//   if ($db_otp == $form_otp) {
+//     return TRUE;
+//   }
+//   else {
+//     $form_state->setErrorByName('otp', 'Invalid OTP.');
+//     return FALSE;
+//   }
+// }
+
+/**
+ * Function to generate random otp.
+ */
+// function generateOTP() {
+//   return random_int(100000, 999999);
+// }
+
+/**
+ * Function to store otp in the database.
+ */
+// function storeOTP($email, $otp) {
+//   $database = Drupal::database();
+//   $query = $database->select('otp_module_verification', 'a');
+//   $query->fields('a', ['email'])
+//         ->condition('a.email', $email, '=');
+//   $data = $query->countQuery()->execute()->fetchField();
+//   if ($data == 0) {
+//     $fields = [
+//       'email' => $email,
+//       'otp' => $otp,
+//     ];
+//     $query = $database->insert('otp_module_verification');
+//     $query->fields($fields)
+//           ->execute();
+//   }
+//   else {
+//     $query = $database->update('otp_module_verification');
+//     $query->fields([' otp' => $otp])
+//           ->condition(' email', $email)
+//           ->execute();
+//   }
+// }
+
+
+
+
+
+
+
+
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function otp_module_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'user_login_form') {
+    
+    $form['email'] = [
+      '#type' => 'email',
+      '#title' => t('Mail address'),
+    ];
+    
+    $form['send_otp_button'] = [
+      '#type' => 'button',
+      '#value' => t('Send OTP'),
+      '#ajax' => [
+        'callback' => 'sendMail',
+      ],
+    ];
+    
+    $form['form_otp'] = [
+      '#type' => 'textfield',
+      '#title' => t('OTP'),
+    ];
+
+    $form['#validate'][] = 'otpValidation';
+    // dd($form);
+
+    $form['mail-status'] = [
+      '#type' => 'markup',
+      '#markup' => '',
+      '#suffix' => '<span id=msg></span>',
+      // '#weight' => -200,
+    ];
+  }
+}
+
+/**
+ * Function for sending email.
+ *
+ *  @param array $form
+ *    Containing form data.
+ *  @param FormStateInterface $form_state
+ *    Containing form values.
+ *
+ *  @return object
+ *    Returns ajax response.
+ */
+function sendMail(array &$form, FormStateInterface $form_state) {
+  $response = new AjaxResponse();
+  $user_email = $form_state->getValue('email');
+  $mailManager = \Drupal::service('plugin.manager.mail');
+  $tempstore = \Drupal::service('tempstore.private')->get('otp_sign_in');
+  $module = 'otp_module';
+  $key = 'otp_verification';
+  $to = $user_email;
+  $otp = random_int(100000, 999999);
+  $tempstore->set('otp', $otp);
+  $params['message'] = 'Your Otp is ' . $otp;
+  $params['title'] = "OTP";
+  $langcode = 'en';
+  $send = TRUE;
+  $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+  if (!$result['result']) {
+    $message = t('There was a problem sending email to @email.', array('@email' => $to));
+  }
+  else {
+    $response->addCommand((new HtmlCommand('#msg', 'OTP has been sent to your registered mail')));
+  }
+  return $response;
+}
+
+/**
+ * Implements hook_mail().
+ */
+function otp_module_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'otp_verification':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('@title', array('@title' => $params['title']));
+      $message['body'][] = $params['message'];
+      break;
+  }
+}
+
+/**
+ * Function to validate the entered otp.
+ * 
+ *  @param array $form
+ *    Containing form data.
+ *  @param FormStateInterface $form_state
+ *    Containing form values.
+ */
+function otpValidation(&$form, FormStateInterface $form_state) {
+  $tempstore = \Drupal::service('tempstore.private')->get('otp_sign_in');
+  $otp = $tempstore->get('otp');
+  $form_otp = $form_state->getValue('form_otp');
+  if (((int) $form_otp) != $otp) {
+    $form_state->setErrorByName('form_otp', 'Invalid otp!');
+    return false;
+  }
+}

@@ -1,0 +1,17 @@
+<?php 
+/**
+ * Implements hook_preprocess_node().
+ */
+function trimmer_preprocess_node(array &$variables) {
+    $node = $variables['node'];
+    if(($node->getType() == 'blogs')) {
+      $variables['#attached']['library'][] = 'trimmer/trimmer-js';
+    }
+}
+
+/**
+* Implements hook_form_alter().
+*/
+function trimmer_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  \Drupal::messenger()->addMessage(t("Form id of this form is @id:",['@id' => $form_id]));
+}
