@@ -1,0 +1,11 @@
+<?php 
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function like_button_preprocess_node(array &$variables) {
+    $node = $variables['node'];
+    if(($node->getType() == 'blogs')) {
+      $variables['#attached']['library'][] = 'like_button/like-btn';
+    }
+}

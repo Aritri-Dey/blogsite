@@ -1,0 +1,9 @@
+name: 'Like Button Module'
+type: module
+core_version_requirement: ^9 || ^10
+description: 'Custom module to add like button feature .'
+package: 'custom'
+configure: tlike_button.settings_form
+libraries:
+  - like_button/like-btn
+  
